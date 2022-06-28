@@ -39,6 +39,22 @@ export default function App() {
   const [player2Grid, setPlayer2Grid] = useState([]);
   const [identity, setIdentity] = useState({ player1: "", player2: "" });
 
+  //If Computer turn is first ,select first move
+  useEffect(() => {
+    if (turn === "player2" && mood === "computer") {
+      firstAiMove();
+      console.log("mood");
+    }
+  }, [mood]);
+
+  //Run Ai Move whenever ist turn
+
+  useEffect(() => {
+    if (turn === "player2" && mood === "computer") {
+      runAi();
+    }
+  }, [player1Grid]);
+
   //This useEffect check for win in every move
   useEffect(() => {
     checkIsWin(player1Grid, "Player1");
@@ -58,6 +74,7 @@ export default function App() {
   };
 
   const setSelection = (id) => {
+    if (turn === "player2" && mood === "computer") return;
     const newArr = grid.map((i) => {
       if (i.id === id) {
         return { ...i, player: turn };
@@ -65,6 +82,7 @@ export default function App() {
     });
     setGrid(newArr);
     setPlayerGrid(id, turn);
+
     setTurn(turn === "player1" ? "player2" : "player1");
   };
   const setPlayerGrid = (id, turn) => {
@@ -103,6 +121,39 @@ export default function App() {
     setPlayer1Grid([]);
     setPlayer2Grid([]);
     setIdentity({ player1: "", player2: "" });
+  };
+
+  const runAi = () => {
+    const arr = [...player1Grid, ...player2Grid];
+    if (arr.length === 9) {
+      return;
+    }
+    //checking which grid are empty
+    const filledArr = [...player1Grid, ...player2Grid];
+    const emptyGrid = grid.filter((x) => !filledArr.includes(x.id));
+    const id = emptyGrid[Math.floor(Math.random() * emptyGrid.length)].id;
+    console.log(emptyGrid);
+    console.log(id);
+    const newArr = grid.map((i) => {
+      if (i.id === id) {
+        return { ...i, player: turn };
+      } else return i;
+    });
+    setGrid(newArr);
+    setPlayerGrid(id, turn);
+    setTurn(turn === "player1" ? "player2" : "player1");
+  };
+
+  const firstAiMove = () => {
+    let id = Math.floor(Math.random() * 9 + 1);
+    const newArr = grid.map((i) => {
+      if (i.id === id) {
+        return { ...i, player: turn };
+      } else return i;
+    });
+    setGrid(newArr);
+    setPlayerGrid(id, turn);
+    setTurn(turn === "player1" ? "player2" : "player1");
   };
 
   return (
